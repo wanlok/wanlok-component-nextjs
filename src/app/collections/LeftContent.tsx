@@ -11,13 +11,15 @@ export const LeftContent = ({
   selectedCollectionName,
   controlGroupState,
   setPanelOpened,
-  selectCollection
+  selectCollection,
+  deleteCollection
 }: {
   collections: Collection[];
   selectedCollectionName: string | undefined;
   controlGroupState: number;
   setPanelOpened: Dispatch<SetStateAction<boolean>>;
   selectCollection: (collection: Collection) => void;
+  deleteCollection: (collection: Collection) => void;
 }) => {
   return (
     <>
@@ -36,7 +38,10 @@ export const LeftContent = ({
         renderRightContent={(collection: Collection) => (
           <Stack>
             {controlGroupState === 1 && (
-              <WButton onClick={() => {}} sx={{ ...iconButtonSx, backgroundColor: "transparent" }}>
+              <WButton
+                onClick={() => deleteCollection(collection)}
+                sx={{ ...iconButtonSx, backgroundColor: "transparent", "&:hover": { backgroundColor: "action.hover" } }}
+              >
                 <CloseIcon sx={{ fontSize: 24 }} />
               </WButton>
             )}
