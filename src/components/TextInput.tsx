@@ -1,0 +1,125 @@
+import { ChangeEvent, KeyboardEvent, useRef } from "react";
+import { FormControl, FormHelperText, FormLabel, SxProps, TextField, Theme } from "@mui/material";
+
+const tabSpaces = "  ";
+
+const handleTab = (
+  element: HTMLTextAreaElement | null,
+  event: KeyboardEvent<HTMLDivElement>,
+  onChange: (value: string) => void
+) => {
+  if (element && event.key === "Tab") {
+    event.preventDefault();
+
+    const start = element.selectionStart;
+    const end = element.selectionEnd;
+
+    if (event.shiftKey) {
+      const lineStart = element.value.lastIndexOf("\n", start - 1) + 1;
+      const hasIndent = element.value.startsWith(tabSpaces, lineStart);
+
+      if (hasIndent) {
+        const newStart = start - tabSpaces.length;
+        const newEnd = end - tabSpaces.length;
+
+        element.setRangeText("", lineStart, lineStart + tabSpaces.length, "start");
+
+        onChange(element.value);
+
+        requestAnimationFrame(() => {
+          element.selectionStart = newStart;
+          element.selectionEnd = newEnd;
+        });
+      }
+    } else {
+      element.setRangeText(tabSpaces, start, end, "end");
+      onChange(element.value);
+
+      requestAnimationFrame(() => {
+        element.selectionStart = element.selectionEnd = start + tabSpaces.length;
+      });
+    }
+  }
+};
+
+export const TextInput = ({
+  label,
+  placeholder,
+  value,
+  onChange,
+  onBlur,
+  helperText,
+  tabAllowed = false,
+  disabled = false,
+  minRows,
+  inputSx
+}: {
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+  onBlur?: () => void;
+  helperText?: string;
+  tabAllowed?: boolean;
+  disabled?: boolean;
+  minRows?: number;
+  inputSx?: SxProps<Theme>;
+}) => {
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  return (
+    <FormControl>
+      {label && <FormLabel sx={{ color: "text.primary", typography: "body2", mb: 0.5 }}>{label}</FormLabel>}
+      <TextField
+        inputRef={inputRef}
+        placeholder={placeholder}
+        value={value}
+        multiline
+        minRows={minRows}
+        disabled={disabled}
+        slotProps={{
+          input: {
+            sx: {
+              backgroundColor: "common.white",
+              borderRadius: 0,
+              ...inputSx
+            }
+          }
+        }}
+        onChange={(event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => onChange(event.target.value)}
+        onBlur={onBlur}
+        onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+          if (tabAllowed) {
+            handleTab(inputRef.current, event, onChange);
+          }
+          //   if (event.key === "Enter" && !event.shiftKey) {
+          //     event.preventDefault();
+          //     submit();
+          //   }
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "primary.dark"
+            },
+            "&:hover fieldset": {
+              borderColor: "common.black"
+            },
+            "&.Mui-focused fieldset": {
+              borderWidth: "1px",
+              borderColor: "common.black"
+            }
+          },
+          "& .MuiInputBase-root": {
+            p: 0
+          },
+          "& textarea": {
+            p: 1,
+            fontSize: 16,
+            lineHeight: "24px"
+          }
+        }}
+      />
+      {helperText && <FormHelperText sx={{ mt: 0.5, ml: 0, color: "text.secondary" }}>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
