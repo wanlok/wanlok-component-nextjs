@@ -1,15 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-
-const contentTypes: Record<string, string> = {
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".gif": "image/gif",
-  ".webp": "image/webp",
-  ".svg": "image/svg+xml",
-  ".bmp": "image/bmp"
-};
+import { getImageContentType } from "@/utils/getImageContentType";
 
 export const GET = async (_request: Request, { params }: { params: Promise<{ name: string; file: string }> }) => {
   const directoryPath = process.env.DIRECTORY_PATH;
@@ -20,8 +11,7 @@ export const GET = async (_request: Request, { params }: { params: Promise<{ nam
   if (name.includes("..") || file.includes("..")) {
     return new Response(null, { status: 400 });
   }
-  const extension = file.slice(file.lastIndexOf(".")).toLowerCase();
-  const contentType = contentTypes[extension];
+  const contentType = getImageContentType(file);
   if (!contentType) {
     return new Response(null, { status: 404 });
   }

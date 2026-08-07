@@ -1,7 +1,14 @@
+import { useState } from "react";
 import { Stack } from "@mui/material";
 import { ImageTitle } from "@/components/ImageTitle";
+import { ImageModal } from "./ImageModal";
+import { getImageContentType } from "@/utils/getImageContentType";
 
 export const RightContent = ({ collectionName, files }: { collectionName: string; files: string[] }) => {
+  const [selectedFile, setSelectedFile] = useState<string | undefined>(undefined);
+  const getFileUrl = (file: string) =>
+    `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(file)}`;
+
   return (
     <Stack sx={{ flex: 1, overflowY: "auto", backgroundColor: "common.white" }}>
       <Stack
@@ -14,8 +21,9 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
         {files.map((file) => (
           <ImageTitle
             key={file}
-            imageUrl={`/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(file)}`}
+            imageUrl={getFileUrl(file)}
             name={file}
+            onClick={getImageContentType(file) ? () => setSelectedFile(file) : undefined}
             aspectRatio="16/9"
             scrollHorizontally={false}
             controlGroupState={0}
@@ -25,6 +33,12 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
           />
         ))}
       </Stack>
+      <ImageModal
+        open={selectedFile !== undefined}
+        src={selectedFile ? getFileUrl(selectedFile) : ""}
+        name={selectedFile ?? ""}
+        onClose={() => setSelectedFile(undefined)}
+      />
     </Stack>
   );
 };
