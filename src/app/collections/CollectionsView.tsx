@@ -3,6 +3,7 @@
 import { LayoutPanel } from "@/components/LayoutPanel";
 import { Stack, Typography } from "@mui/material";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LeftHeader } from "./LeftHeader";
 import { LeftContent } from "./LeftContent";
 import { RightHeader } from "./RightHeader";
@@ -11,9 +12,15 @@ import { CollectionModal } from "./CollectionModal";
 import { Collection } from "@/Types";
 import { addCollection, deleteCollection } from "./actions";
 
-export const CollectionsView = ({ collections }: { collections: Collection[] }) => {
+export const CollectionsView = ({
+  collections,
+  selectedCollectionName
+}: {
+  collections: Collection[];
+  selectedCollectionName: string | undefined;
+}) => {
+  const router = useRouter();
   const [panelOpened, setPanelOpened] = useState(false);
-  const [selectedCollectionName, setSelectedCollectionName] = useState<string | undefined>(collections[0]?.name);
   const [opened, setOpened] = useState(false);
   const [controlGroupState, setControlGroupState] = useState(0);
   const selectedCollection = collections.find((collection) => collection.name === selectedCollectionName);
@@ -39,7 +46,7 @@ export const CollectionsView = ({ collections }: { collections: Collection[] }) 
             selectedCollectionName={selectedCollectionName}
             controlGroupState={controlGroupState}
             setPanelOpened={setPanelOpened}
-            selectCollection={(collection) => setSelectedCollectionName(collection.name)}
+            selectCollection={(collection) => router.push(`/collections/${encodeURIComponent(collection.name)}`)}
             deleteCollection={(collection) => deleteCollection(collection.name)}
           />
         </>
@@ -51,7 +58,7 @@ export const CollectionsView = ({ collections }: { collections: Collection[] }) 
       }
     >
       <RightHeader name={selectedCollection?.name ?? ""} />
-      <RightContent files={selectedCollection?.files ?? []} />
+      <RightContent collectionName={selectedCollection?.name ?? ""} files={selectedCollection?.files ?? []} />
       <CollectionModal
         open={opened}
         onClose={() => setOpened(false)}

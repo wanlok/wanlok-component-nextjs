@@ -10,7 +10,7 @@ export const addCollection = async (name: string) => {
     return;
   }
   await mkdir(join(directoryPath, name));
-  revalidatePath("/collections");
+  revalidatePath("/collections", "layout");
 };
 
 export const deleteCollection = async (name: string) => {
@@ -19,5 +19,5 @@ export const deleteCollection = async (name: string) => {
     return;
   }
   await rm(join(directoryPath, name), { recursive: true });
-  revalidatePath("/collections");
+  revalidatePath("/collections", "layout");
 };

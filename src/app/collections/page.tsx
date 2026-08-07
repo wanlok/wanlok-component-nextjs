@@ -1,9 +1,13 @@
+import { redirect } from "next/navigation";
 import { getCollections } from "./getCollections";
 import { CollectionsView } from "./CollectionsView";
 
 const Page = async () => {
   const collections = await getCollections();
-  return <CollectionsView collections={collections} />;
+  if (collections.length > 0) {
+    redirect(`/collections/${encodeURIComponent(collections[0].name)}`);
+  }
+  return <CollectionsView collections={collections} selectedCollectionName={undefined} />;
 };
 
 export default Page;
