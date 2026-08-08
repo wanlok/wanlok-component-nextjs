@@ -32,6 +32,7 @@ export const RightContent = ({
           <ImageTitle
             key={file.name}
             imageUrl={getFileUrl(file.name)}
+            imageSx={{ objectPosition: "top" }}
             name={file.name}
             onClick={isCollectionImage(file) ? () => setSelectedFile(file) : undefined}
             aspectRatio="16/9"
