@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Stack, useMediaQuery, useTheme } from "@mui/material";
 import { Image as ImageIcon, ViewList as ViewListIcon } from "@mui/icons-material";
 import { WModal } from "@/components/WModal";
@@ -54,6 +54,39 @@ export const ImageModal = ({
   const mobile = useMediaQuery(breakpoints.down("md"));
   const [zoom, setZoom] = useState("fit");
   const [editedName, setEditedName] = useState(name);
+  const [isFullScreen, setIsFullScreen] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("imageModalFullScreen") === "true"
+  );
+  const [isDetailsHidden, setIsDetailsHidden] = useState(false);
+  const [scrollbarWidths, setScrollbarWidths] = useState({ right: 0, bottom: 0 });
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const fullScreen = mobile || isFullScreen;
+  const detailsHidden = mobile ? false : isDetailsHidden;
+
+  const onFullScreenClick = () => {
+    setIsFullScreen((current) => {
+      const next = !current;
+      localStorage.setItem("imageModalFullScreen", String(next));
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) {
+      return;
+    }
+    const updateScrollbarWidths = () => {
+      setScrollbarWidths({
+        right: element.offsetWidth - element.clientWidth,
+        bottom: element.offsetHeight - element.clientHeight
+      });
+    };
+    updateScrollbarWidths();
+    const resizeObserver = new ResizeObserver(updateScrollbarWidths);
+    resizeObserver.observe(element);
+    return () => resizeObserver.disconnect();
+  }, [zoom]);
 
   return (
     <WModal
@@ -61,6 +94,7 @@ export const ImageModal = ({
       onClose={onClose}
       width="80vw"
       height="80dvh"
+      isFullScreen={isFullScreen}
       tabs={[{ icon: <ImageIcon sx={{ fontSize: 24 }} />, label: "Image" }]}
       hideLeftLabel
       top={
@@ -68,25 +102,30 @@ export const ImageModal = ({
           <ImageModalTopControlGroup onZoomInClick={() => setZoom("original")} onZoomOutClick={() => setZoom("fit")} />
         ) : undefined
       }
-      rightTabs={[{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
+      rightTabs={detailsHidden ? undefined : [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
       rightSelectedTab={0}
       rightBottom={
-        <YesNoButtons
-          yesLabel="Save"
-          onYesClick={() => {
-            onSaveButtonClick(editedName);
-            onClose();
-          }}
-          noLabel="Cancel"
-          onNoClick={onClose}
-        />
+        detailsHidden ? undefined : (
+          <YesNoButtons
+            yesLabel="Save"
+            onYesClick={() => {
+              onSaveButtonClick(editedName);
+              onClose();
+            }}
+            noLabel="Cancel"
+            onNoClick={onClose}
+          />
+        )
       }
       rightChildren={
-        <Details name={editedName} onNameChange={setEditedName} width={width} height={height} type={type} />
+        detailsHidden ? undefined : (
+          <Details name={editedName} onNameChange={setEditedName} width={width} height={height} type={type} />
+        )
       }
     >
       <Box sx={{ position: "relative", height: "100%" }}>
         <Stack
+          ref={scrollRef}
           sx={
             zoom === "fit"
               ? {
@@ -112,12 +151,32 @@ export const ImageModal = ({
               component="img"
               src={src}
               alt={name}
-              sx={{ display: "block", ...(zoom === "fit" && { maxWidth: "100%", maxHeight: "80dvh" }) }}
+              onLoad={() => {
+                const element = scrollRef.current;
+                if (element) {
+                  setScrollbarWidths({
+                    right: element.offsetWidth - element.clientWidth,
+                    bottom: element.offsetHeight - element.clientHeight
+                  });
+                }
+              }}
+              sx={{
+                display: "block",
+                ...(zoom === "fit" && { maxWidth: "100%", maxHeight: fullScreen ? "100dvh" : "80dvh" })
+              }}
             />
           </Box>
         </Stack>
         {!mobile && (
-          <ImageModalControlGroup onZoomInClick={() => setZoom("original")} onZoomOutClick={() => setZoom("fit")} />
+          <ImageModalControlGroup
+            onZoomInClick={() => setZoom("original")}
+            onZoomOutClick={() => setZoom("fit")}
+            isFullScreen={isFullScreen}
+            onFullScreenClick={onFullScreenClick}
+            isDetailsHidden={isDetailsHidden}
+            onDetailsClick={() => setIsDetailsHidden(!isDetailsHidden)}
+            scrollbarWidths={scrollbarWidths}
+          />
         )}
       </Box>
     </WModal>
