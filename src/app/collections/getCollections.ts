@@ -4,6 +4,7 @@ import { imageSizeFromFile } from "image-size/fromFile";
 import { Collection, CollectionFile, CollectionImage } from "@/Types";
 import { getContentTypeFromImageType } from "@/utils/getContentTypeFromImageType";
 import { getContentTypeFromFile } from "@/utils/getContentTypeFromFile";
+import { compareFileNames } from "@/utils/compareFileNames";
 
 const ignoreFiles = [".DS_Store"];
 const fallbackContentType = "application/octet-stream";
@@ -34,11 +35,13 @@ export const getCollections = async (): Promise<Collection[]> => {
       const files = await readdir(join(directoryPath, folder.name), { withFileTypes: true });
       return {
         name: folder.name,
-        files: await Promise.all(
-          files
-            .filter((file) => file.isFile() && !ignoreFiles.includes(file.name))
-            .map((file) => getCollectionFile(join(directoryPath, folder.name, file.name), file.name))
-        )
+        files: (
+          await Promise.all(
+            files
+              .filter((file) => file.isFile() && !ignoreFiles.includes(file.name))
+              .map((file) => getCollectionFile(join(directoryPath, folder.name, file.name), file.name))
+          )
+        ).sort((a, b) => compareFileNames(a.name, b.name))
       };
     })
   );
