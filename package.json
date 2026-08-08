@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set -a; [ -f .env.local ] && . ./.env.local; set +a; next dev -H 0.0.0.0",
+    "dev": "dotenv -e .env.local -q -- next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -24,6 +24,7 @@
     "@types/node": "20.19.43",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "dotenv-cli": "11.0.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
     "typescript": "5.9.3"
