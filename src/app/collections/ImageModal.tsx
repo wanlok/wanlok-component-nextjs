@@ -11,13 +11,27 @@ import { iconButtonSx, WButton } from "@/components/WButton";
 import { TextInput } from "@/components/TextInput";
 import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
+import { ImageMeta } from "@/components/ImageMeta";
 
-const Details = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
+const Details = ({
+  name,
+  onNameChange,
+  width,
+  height,
+  contentType
+}: {
+  name: string;
+  onNameChange: (name: string) => void;
+  width: number;
+  height: number;
+  contentType: string;
+}) => (
   <Stack sx={{ p: 2, gap: 2 }}>
     <Stack sx={{ gap: "1px" }}>
       <StyledContainer sx={{ p: 1 }}>
         <TextInput label="Name" value={name} onChange={onNameChange} inputSx={{ flex: 1 }} />
       </StyledContainer>
+      <ImageMeta width={width} height={height} contentType={contentType} />
     </Stack>
   </Stack>
 );
@@ -26,12 +40,18 @@ export const ImageModal = ({
   open,
   src,
   name,
+  width,
+  height,
+  contentType,
   onSaveButtonClick,
   onClose
 }: {
   open: boolean;
   src: string;
   name: string;
+  width: number;
+  height: number;
+  contentType: string;
   onSaveButtonClick: (name: string) => void;
   onClose: () => void;
 }) => {
@@ -73,7 +93,9 @@ export const ImageModal = ({
           onNoClick={onClose}
         />
       }
-      rightChildren={<Details name={editedName} onNameChange={setEditedName} />}
+      rightChildren={
+        <Details name={editedName} onNameChange={setEditedName} width={width} height={height} contentType={contentType} />
+      }
     >
       <Box sx={{ position: "relative", height: "100%" }}>
         <Stack

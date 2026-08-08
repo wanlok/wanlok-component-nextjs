@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Stack } from "@mui/material";
 import { ImageTitle } from "@/components/ImageTitle";
 import { ImageModal } from "./ImageModal";
-import { getImageContentType } from "@/utils/getImageContentType";
 import { renameCollectionFile } from "./actions";
+import { CollectionFile, CollectionImage } from "@/Types";
+import { isCollectionImage } from "@/utils/isCollectionImage";
 
-export const RightContent = ({ collectionName, files }: { collectionName: string; files: string[] }) => {
-  const [selectedFile, setSelectedFile] = useState<string | undefined>(undefined);
-  const getFileUrl = (file: string) =>
-    `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(file)}`;
+export const RightContent = ({ collectionName, files }: { collectionName: string; files: CollectionFile[] }) => {
+  const [selectedFile, setSelectedFile] = useState<CollectionImage | undefined>(undefined);
+  const getFileUrl = (name: string) =>
+    `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(name)}`;
 
   return (
     <Stack sx={{ flex: 1, overflowY: "auto", backgroundColor: "common.white" }}>
@@ -21,10 +22,10 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
       >
         {files.map((file) => (
           <ImageTitle
-            key={file}
-            imageUrl={getFileUrl(file)}
-            name={file}
-            onClick={getImageContentType(file) ? () => setSelectedFile(file) : undefined}
+            key={file.name}
+            imageUrl={getFileUrl(file.name)}
+            name={file.name}
+            onClick={isCollectionImage(file) ? () => setSelectedFile(file) : undefined}
             aspectRatio="16/9"
             scrollHorizontally={false}
             controlGroupState={0}
@@ -35,13 +36,16 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
         ))}
       </Stack>
       <ImageModal
-        key={selectedFile}
+        key={selectedFile?.name}
         open={selectedFile !== undefined}
-        src={selectedFile ? getFileUrl(selectedFile) : ""}
-        name={selectedFile ?? ""}
+        src={selectedFile ? getFileUrl(selectedFile.name) : ""}
+        name={selectedFile?.name ?? ""}
+        width={selectedFile?.width ?? 0}
+        height={selectedFile?.height ?? 0}
+        contentType={selectedFile?.contentType ?? ""}
         onSaveButtonClick={(newName) => {
-          if (selectedFile && newName !== selectedFile) {
-            renameCollectionFile(collectionName, selectedFile, newName);
+          if (selectedFile && newName !== selectedFile.name) {
+            renameCollectionFile(collectionName, selectedFile.name, newName);
           }
         }}
         onClose={() => setSelectedFile(undefined)}
