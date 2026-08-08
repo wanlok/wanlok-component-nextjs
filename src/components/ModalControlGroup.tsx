@@ -38,7 +38,7 @@ export const ModalControlGroup = ({
 
   const iconSize = 64;
 
-  const space = 8;
+  const space = isFullScreen ? 0 : 8;
 
   const top = space;
   const bottom = space + scrollbarWidths.bottom;
