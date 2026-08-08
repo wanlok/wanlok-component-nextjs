@@ -4,7 +4,7 @@ import { ImageTitle } from "@/components/ImageTitle";
 import { ImageModal } from "@/components/ImageModal";
 import { VideoModal } from "@/components/VideoModal";
 import { deleteCollectionFile, renameCollectionFile } from "./actions";
-import { CollectionFile, CollectionImage } from "@/Types";
+import { CollectionFile } from "@/Types";
 import { isCollectionImage } from "@/utils/isCollectionImage";
 import { isCollectionVideo } from "@/utils/isCollectionVideo";
 
@@ -17,10 +17,21 @@ export const RightContent = ({
   files: CollectionFile[];
   controlGroupState: number;
 }) => {
-  const [selectedImage, setSelectedImage] = useState<CollectionImage | undefined>(undefined);
-  const [selectedVideo, setSelectedVideo] = useState<CollectionFile | undefined>(undefined);
+  const [selectedFile, setSelectedFile] = useState<CollectionFile | undefined>(undefined);
   const getFileUrl = (name: string) =>
     `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(name)}`;
+
+  const previewableFiles = files.filter((file) => isCollectionImage(file) || isCollectionVideo(file));
+  const selectedIndex = selectedFile
+    ? previewableFiles.findIndex((file) => file.name === selectedFile.name)
+    : -1;
+  const previousFile = selectedIndex > 0 ? previewableFiles[selectedIndex - 1] : undefined;
+  const nextFile =
+    selectedIndex >= 0 && selectedIndex < previewableFiles.length - 1
+      ? previewableFiles[selectedIndex + 1]
+      : undefined;
+  const selectedImage = selectedFile && isCollectionImage(selectedFile) ? selectedFile : undefined;
+  const selectedVideo = selectedFile && isCollectionVideo(selectedFile) ? selectedFile : undefined;
 
   return (
     <Stack sx={{ flex: 1, overflowY: "auto", backgroundColor: "common.white" }}>
@@ -38,11 +49,7 @@ export const RightContent = ({
             imageSx={{ objectPosition: "top" }}
             name={file.name}
             onClick={
-              isCollectionImage(file)
-                ? () => setSelectedImage(file)
-                : isCollectionVideo(file)
-                  ? () => setSelectedVideo(file)
-                  : undefined
+              isCollectionImage(file) || isCollectionVideo(file) ? () => setSelectedFile(file) : undefined
             }
             aspectRatio="16/9"
             scrollHorizontally={false}
@@ -61,24 +68,28 @@ export const RightContent = ({
         width={selectedImage?.width ?? 0}
         height={selectedImage?.height ?? 0}
         type={selectedImage?.type ?? ""}
+        onPreviousClick={previousFile ? () => setSelectedFile(previousFile) : undefined}
+        onNextClick={nextFile ? () => setSelectedFile(nextFile) : undefined}
         onSaveButtonClick={(newName) => {
           if (selectedImage && newName !== selectedImage.name) {
             renameCollectionFile(collectionName, selectedImage.name, newName);
           }
         }}
-        onClose={() => setSelectedImage(undefined)}
+        onClose={() => setSelectedFile(undefined)}
       />
       <VideoModal
         key={selectedVideo?.name}
         open={selectedVideo !== undefined}
         src={selectedVideo ? getFileUrl(selectedVideo.name) : ""}
         name={selectedVideo?.name ?? ""}
+        onPreviousClick={previousFile ? () => setSelectedFile(previousFile) : undefined}
+        onNextClick={nextFile ? () => setSelectedFile(nextFile) : undefined}
         onSaveButtonClick={(newName) => {
           if (selectedVideo && newName !== selectedVideo.name) {
             renameCollectionFile(collectionName, selectedVideo.name, newName);
           }
         }}
-        onClose={() => setSelectedVideo(undefined)}
+        onClose={() => setSelectedFile(undefined)}
       />
     </Stack>
   );

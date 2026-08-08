@@ -1,0 +1,84 @@
+import { ReactNode } from "react";
+import { alpha, Stack, useTheme } from "@mui/material";
+import {
+  Fullscreen as FullscreenIcon,
+  FullscreenExit as FullscreenExitIcon,
+  KeyboardArrowLeft as KeyboardArrowLeftIcon,
+  KeyboardArrowRight as KeyboardArrowRightIcon,
+  ViewList as ViewListIcon
+} from "@mui/icons-material";
+import { iconButtonSx, WButton } from "@/components/WButton";
+
+export const ModalControlGroup = ({
+  onPreviousClick,
+  onNextClick,
+  isFullScreen,
+  onFullScreenClick,
+  isDetailsHidden,
+  onDetailsClick,
+  scrollbarWidths = { right: 0, bottom: 0 },
+  topLeftChildren
+}: {
+  onPreviousClick?: () => void;
+  onNextClick?: () => void;
+  isFullScreen: boolean;
+  onFullScreenClick: () => void;
+  isDetailsHidden: boolean;
+  onDetailsClick: () => void;
+  scrollbarWidths?: { bottom: number; right: number };
+  topLeftChildren?: ReactNode;
+}) => {
+  const { palette } = useTheme();
+
+  const overlayButtonSx = {
+    ...iconButtonSx,
+    backgroundColor: alpha(palette.primary.main, 0.9),
+    "&:hover": { backgroundColor: palette.primary.main }
+  };
+
+  const iconSize = 64;
+
+  const space = 8;
+
+  const top = space;
+  const bottom = space + scrollbarWidths.bottom;
+  const left = space;
+  const right = space + scrollbarWidths.right;
+
+  const navigateButtonSx = {
+    position: "absolute",
+    top: top + 64,
+    bottom: bottom + 64,
+    width: 56,
+    overflow: "hidden",
+    color: "white",
+    backgroundColor: "transparent",
+    "&:hover": { backgroundColor: "transparent" }
+  };
+
+  return (
+    <>
+      <WButton disabled={!onPreviousClick} onClick={onPreviousClick} sx={{ ...navigateButtonSx, left }}>
+        <KeyboardArrowLeftIcon sx={{ fontSize: iconSize }} />
+      </WButton>
+      <WButton disabled={!onNextClick} onClick={onNextClick} sx={{ ...navigateButtonSx, right }}>
+        <KeyboardArrowRightIcon sx={{ fontSize: iconSize }} />
+      </WButton>
+      {topLeftChildren && <Stack sx={{ position: "absolute", top, left }}>{topLeftChildren}</Stack>}
+      <Stack sx={{ position: "absolute", top, right }}>
+        <Stack sx={{ flexDirection: "row", gap: "1px" }}>
+          <WButton onClick={onFullScreenClick} sx={overlayButtonSx}>
+            {isFullScreen ? <FullscreenExitIcon sx={{ fontSize: 30 }} /> : <FullscreenIcon sx={{ fontSize: 30 }} />}
+          </WButton>
+          <WButton onClick={onDetailsClick} sx={overlayButtonSx}>
+            {isDetailsHidden ? (
+              <ViewListIcon sx={{ fontSize: 24 }} />
+            ) : (
+              <KeyboardArrowRightIcon sx={{ fontSize: 32 }} />
+            )}
+          </WButton>
+        </Stack>
+      </Stack>
+    </>
+  );
+};

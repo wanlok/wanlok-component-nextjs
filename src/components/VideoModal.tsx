@@ -5,6 +5,8 @@ import { WModal } from "@/components/WModal";
 import { TextInput } from "@/components/TextInput";
 import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
+import { ModalControlGroup } from "./ModalControlGroup";
+import { useModalControlGroup } from "./useModalControlGroup";
 
 const Details = ({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) => (
   <Stack sx={{ p: 2, gap: 2 }}>
@@ -20,16 +22,21 @@ export const VideoModal = ({
   open,
   src,
   name,
+  onPreviousClick,
+  onNextClick,
   onSaveButtonClick,
   onClose
 }: {
   open: boolean;
   src: string;
   name: string;
+  onPreviousClick?: () => void;
+  onNextClick?: () => void;
   onSaveButtonClick: (name: string) => void;
   onClose: () => void;
 }) => {
   const [editedName, setEditedName] = useState(name);
+  const { isFullScreen, onFullScreenClick, isDetailsHidden, onDetailsClick } = useModalControlGroup();
 
   return (
     <WModal
@@ -37,32 +44,44 @@ export const VideoModal = ({
       onClose={onClose}
       width="80vw"
       height="80dvh"
+      isFullScreen={isFullScreen}
       tabs={[{ icon: <SmartDisplayIcon sx={{ fontSize: 24 }} />, label: "Video" }]}
       hideLeftLabel
-      rightTabs={[{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
+      rightTabs={isDetailsHidden ? undefined : [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
       rightSelectedTab={0}
       rightBottom={
-        <YesNoButtons
-          yesLabel="Save"
-          onYesClick={() => {
-            onSaveButtonClick(editedName);
-            onClose();
-          }}
-          noLabel="Cancel"
-          onNoClick={onClose}
-        />
+        isDetailsHidden ? undefined : (
+          <YesNoButtons
+            yesLabel="Save"
+            onYesClick={() => {
+              onSaveButtonClick(editedName);
+              onClose();
+            }}
+            noLabel="Cancel"
+            onNoClick={onClose}
+          />
+        )
       }
-      rightChildren={<Details name={editedName} onNameChange={setEditedName} />}
+      rightChildren={isDetailsHidden ? undefined : <Details name={editedName} onNameChange={setEditedName} />}
     >
-      <Stack sx={{ height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: "common.black" }}>
-        <Box
-          component="video"
-          src={src}
-          controls
-          autoPlay
-          sx={{ display: "block", maxWidth: "100%", maxHeight: "100%" }}
+      <Box sx={{ position: "relative", height: "100%" }}>
+        <Stack sx={{ height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: "common.black" }}>
+          <Box
+            component="video"
+            src={src}
+            controls
+            sx={{ display: "block", width: "100%", height: "100%", objectFit: "contain" }}
+          />
+        </Stack>
+        <ModalControlGroup
+          onPreviousClick={onPreviousClick}
+          onNextClick={onNextClick}
+          isFullScreen={isFullScreen}
+          onFullScreenClick={onFullScreenClick}
+          isDetailsHidden={isDetailsHidden}
+          onDetailsClick={onDetailsClick}
         />
-      </Stack>
+      </Box>
     </WModal>
   );
 };

@@ -7,6 +7,7 @@ import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
 import { ImageMeta } from "@/components/ImageMeta";
 import { ImageModalControlGroup, ImageModalTopControlGroup } from "./ImageModalControlGroup";
+import { useModalControlGroup } from "./useModalControlGroup";
 
 const Details = ({
   name,
@@ -38,6 +39,8 @@ export const ImageModal = ({
   width,
   height,
   type,
+  onPreviousClick,
+  onNextClick,
   onSaveButtonClick,
   onClose
 }: {
@@ -47,6 +50,8 @@ export const ImageModal = ({
   width: number;
   height: number;
   type: string;
+  onPreviousClick?: () => void;
+  onNextClick?: () => void;
   onSaveButtonClick: (name: string) => void;
   onClose: () => void;
 }) => {
@@ -54,22 +59,11 @@ export const ImageModal = ({
   const mobile = useMediaQuery(breakpoints.down("md"));
   const [zoom, setZoom] = useState("fit");
   const [editedName, setEditedName] = useState(name);
-  const [isFullScreen, setIsFullScreen] = useState(
-    () => typeof window !== "undefined" && localStorage.getItem("imageModalFullScreen") === "true"
-  );
-  const [isDetailsHidden, setIsDetailsHidden] = useState(false);
-  const [scrollbarWidths, setScrollbarWidths] = useState({ right: 0, bottom: 0 });
+  const { isFullScreen, onFullScreenClick, isDetailsHidden, onDetailsClick } = useModalControlGroup();
+  const [scrollbarWidths, setScrollbarWidths] = useState({ bottom: 0, right: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
   const fullScreen = mobile || isFullScreen;
   const detailsHidden = mobile ? false : isDetailsHidden;
-
-  const onFullScreenClick = () => {
-    setIsFullScreen((current) => {
-      const next = !current;
-      localStorage.setItem("imageModalFullScreen", String(next));
-      return next;
-    });
-  };
 
   useEffect(() => {
     const element = scrollRef.current;
@@ -78,8 +72,8 @@ export const ImageModal = ({
     }
     const updateScrollbarWidths = () => {
       setScrollbarWidths({
-        right: element.offsetWidth - element.clientWidth,
-        bottom: element.offsetHeight - element.clientHeight
+        bottom: element.offsetHeight - element.clientHeight,
+        right: element.offsetWidth - element.clientWidth
       });
     };
     updateScrollbarWidths();
@@ -155,8 +149,8 @@ export const ImageModal = ({
                 const element = scrollRef.current;
                 if (element) {
                   setScrollbarWidths({
-                    right: element.offsetWidth - element.clientWidth,
-                    bottom: element.offsetHeight - element.clientHeight
+                    bottom: element.offsetHeight - element.clientHeight,
+                    right: element.offsetWidth - element.clientWidth
                   });
                 }
               }}
@@ -174,7 +168,9 @@ export const ImageModal = ({
             isFullScreen={isFullScreen}
             onFullScreenClick={onFullScreenClick}
             isDetailsHidden={isDetailsHidden}
-            onDetailsClick={() => setIsDetailsHidden(!isDetailsHidden)}
+            onDetailsClick={onDetailsClick}
+            onPreviousClick={onPreviousClick}
+            onNextClick={onNextClick}
             scrollbarWidths={scrollbarWidths}
           />
         )}
