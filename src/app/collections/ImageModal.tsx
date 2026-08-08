@@ -64,8 +64,8 @@ export const ImageModal = ({
     <WModal
       open={open}
       onClose={onClose}
-      width="80vw"
-      height="80dvh"
+      width="100vw"
+      height="100dvh"
       tabs={[{ icon: <ImageIcon sx={{ fontSize: 24 }} />, label: "Image" }]}
       hideLeftLabel
       top={

@@ -24,7 +24,16 @@ type RightPanelProps = {
   rightScrollRef?: RefObject<HTMLDivElement>;
 };
 
-const WModalContent = ({ tabs, selectedTab = 0, onTabChange, onClose, top, bottom, children, scrollRef }: PanelProps) => {
+const WModalContent = ({
+  tabs,
+  selectedTab = 0,
+  onTabChange,
+  onClose,
+  top,
+  bottom,
+  children,
+  scrollRef
+}: PanelProps) => {
   const hasHeader = (tabs != null && tabs.length > 0) || top != null;
   return (
     <Stack sx={{ flex: 1, overflow: "hidden", backgroundColor: "background.default" }}>
@@ -102,7 +111,7 @@ export const WModal = ({
           flexDirection: mobile && rightChildren ? "column" : "row",
           width: mobile ? "100vw" : (width ?? (rightChildren !== undefined ? 800 : rightWidth)),
           height: mobile ? "100dvh" : (height ?? "fit-content"),
-          maxHeight: mobile ? undefined : "80dvh",
+          maxHeight: mobile ? undefined : "100dvh",
           overflow: "hidden",
           gap: mobile && rightChildren ? 0 : "1px",
           backgroundColor: rightChildren ? "common.white" : undefined,
