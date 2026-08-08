@@ -3,6 +3,7 @@ import { Stack } from "@mui/material";
 import { ImageTitle } from "@/components/ImageTitle";
 import { ImageModal } from "./ImageModal";
 import { getImageContentType } from "@/utils/getImageContentType";
+import { renameCollectionFile } from "./actions";
 
 export const RightContent = ({ collectionName, files }: { collectionName: string; files: string[] }) => {
   const [selectedFile, setSelectedFile] = useState<string | undefined>(undefined);
@@ -34,9 +35,15 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
         ))}
       </Stack>
       <ImageModal
+        key={selectedFile}
         open={selectedFile !== undefined}
         src={selectedFile ? getFileUrl(selectedFile) : ""}
         name={selectedFile ?? ""}
+        onSaveButtonClick={(newName) => {
+          if (selectedFile && newName !== selectedFile) {
+            renameCollectionFile(collectionName, selectedFile, newName);
+          }
+        }}
         onClose={() => setSelectedFile(undefined)}
       />
     </Stack>

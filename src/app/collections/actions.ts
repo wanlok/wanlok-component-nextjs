@@ -1,6 +1,6 @@
 "use server";
 
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { revalidatePath } from "next/cache";
 
@@ -19,5 +19,14 @@ export const deleteCollection = async (name: string) => {
     return;
   }
   await rm(join(directoryPath, name), { recursive: true });
+  revalidatePath("/collections", "layout");
+};
+
+export const renameCollectionFile = async (collectionName: string, oldFileName: string, newFileName: string) => {
+  const directoryPath = process.env.DIRECTORY_PATH;
+  if (!directoryPath || oldFileName.includes("..") || newFileName.includes("..")) {
+    return;
+  }
+  await rename(join(directoryPath, collectionName, oldFileName), join(directoryPath, collectionName, newFileName));
   revalidatePath("/collections", "layout");
 };
