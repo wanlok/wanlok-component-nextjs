@@ -94,7 +94,13 @@ export const ImageModal = ({
         />
       }
       rightChildren={
-        <Details name={editedName} onNameChange={setEditedName} width={width} height={height} contentType={contentType} />
+        <Details
+          name={editedName}
+          onNameChange={setEditedName}
+          width={width}
+          height={height}
+          contentType={contentType}
+        />
       }
     >
       <Box sx={{ position: "relative", height: "100%" }}>

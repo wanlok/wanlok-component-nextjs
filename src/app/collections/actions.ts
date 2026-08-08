@@ -30,3 +30,12 @@ export const renameCollectionFile = async (collectionName: string, oldFileName: 
   await rename(join(directoryPath, collectionName, oldFileName), join(directoryPath, collectionName, newFileName));
   revalidatePath("/collections", "layout");
 };
+
+export const deleteCollectionFile = async (collectionName: string, fileName: string) => {
+  const directoryPath = process.env.DIRECTORY_PATH;
+  if (!directoryPath || fileName.includes("..")) {
+    return;
+  }
+  await rm(join(directoryPath, collectionName, fileName));
+  revalidatePath("/collections", "layout");
+};

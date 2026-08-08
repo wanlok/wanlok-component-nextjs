@@ -22,8 +22,11 @@ export const CollectionsView = ({
   const router = useRouter();
   const [panelOpened, setPanelOpened] = useState(false);
   const [opened, setOpened] = useState(false);
+  const [folderControlGroupState, setFolderControlGroupState] = useState(0);
   const [controlGroupState, setControlGroupState] = useState(0);
   const selectedCollection = collections.find((collection) => collection.name === selectedCollectionName);
+  const effectiveFolderControlGroupState = collections.length === 0 ? 0 : folderControlGroupState;
+  const effectiveControlGroupState = (selectedCollection?.files.length ?? 0) === 0 ? 0 : controlGroupState;
 
   return (
     <LayoutPanel
@@ -35,16 +38,16 @@ export const CollectionsView = ({
         <>
           <LeftHeader
             numberOfCollections={collections.length}
-            controlGroupState={controlGroupState}
+            folderControlGroupState={effectiveFolderControlGroupState}
             onAddButtonClick={() => setOpened(true)}
-            onDeleteButtonClick={() => setControlGroupState(controlGroupState === 1 ? 0 : 1)}
+            onDeleteButtonClick={() => setFolderControlGroupState(effectiveFolderControlGroupState === 1 ? 0 : 1)}
             onUploadButtonClick={() => {}}
             onDownloadButtonClick={() => {}}
           />
           <LeftContent
             collections={collections}
             selectedCollectionName={selectedCollectionName}
-            controlGroupState={controlGroupState}
+            folderControlGroupState={effectiveFolderControlGroupState}
             setPanelOpened={setPanelOpened}
             selectCollection={(collection) => router.push(`/collections/${encodeURIComponent(collection.name)}`)}
             deleteCollection={(collection) => deleteCollection(collection.name)}
@@ -57,8 +60,16 @@ export const CollectionsView = ({
         </Stack>
       }
     >
-      <RightHeader name={selectedCollection?.name ?? ""} />
-      <RightContent collectionName={selectedCollection?.name ?? ""} files={selectedCollection?.files ?? []} />
+      <RightHeader
+        name={selectedCollection?.name ?? ""}
+        controlGroupState={effectiveControlGroupState}
+        onDeleteButtonClick={() => setControlGroupState(effectiveControlGroupState === 3 ? 0 : 3)}
+      />
+      <RightContent
+        collectionName={selectedCollection?.name ?? ""}
+        files={selectedCollection?.files ?? []}
+        controlGroupState={effectiveControlGroupState}
+      />
       <CollectionModal
         open={opened}
         onClose={() => setOpened(false)}

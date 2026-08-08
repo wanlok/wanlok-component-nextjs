@@ -9,14 +9,14 @@ import { Collection } from "@/Types";
 export const LeftContent = ({
   collections,
   selectedCollectionName,
-  controlGroupState,
+  folderControlGroupState,
   setPanelOpened,
   selectCollection,
   deleteCollection
 }: {
   collections: Collection[];
   selectedCollectionName: string | undefined;
-  controlGroupState: number;
+  folderControlGroupState: number;
   setPanelOpened: Dispatch<SetStateAction<boolean>>;
   selectCollection: (collection: Collection) => void;
   deleteCollection: (collection: Collection) => void;
@@ -37,7 +37,7 @@ export const LeftContent = ({
         }}
         renderRightContent={(collection: Collection) => (
           <Stack>
-            {controlGroupState === 1 && (
+            {folderControlGroupState === 1 && (
               <WButton
                 onClick={() => deleteCollection(collection)}
                 sx={{ ...iconButtonSx, backgroundColor: "transparent", "&:hover": { backgroundColor: "action.hover" } }}

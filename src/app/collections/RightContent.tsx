@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Stack } from "@mui/material";
 import { ImageTitle } from "@/components/ImageTitle";
 import { ImageModal } from "./ImageModal";
-import { renameCollectionFile } from "./actions";
+import { deleteCollectionFile, renameCollectionFile } from "./actions";
 import { CollectionFile, CollectionImage } from "@/Types";
 import { isCollectionImage } from "@/utils/isCollectionImage";
 
-export const RightContent = ({ collectionName, files }: { collectionName: string; files: CollectionFile[] }) => {
+export const RightContent = ({
+  collectionName,
+  files,
+  controlGroupState
+}: {
+  collectionName: string;
+  files: CollectionFile[];
+  controlGroupState: number;
+}) => {
   const [selectedFile, setSelectedFile] = useState<CollectionImage | undefined>(undefined);
   const getFileUrl = (name: string) =>
     `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(name)}`;
@@ -28,10 +36,10 @@ export const RightContent = ({ collectionName, files }: { collectionName: string
             onClick={isCollectionImage(file) ? () => setSelectedFile(file) : undefined}
             aspectRatio="16/9"
             scrollHorizontally={false}
-            controlGroupState={0}
+            controlGroupState={controlGroupState}
             onLeftButtonClick={() => {}}
             onRightButtonClick={() => {}}
-            onDeleteButtonClick={() => {}}
+            onDeleteButtonClick={() => deleteCollectionFile(collectionName, file.name)}
           />
         ))}
       </Stack>
