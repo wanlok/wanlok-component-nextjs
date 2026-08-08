@@ -58,12 +58,16 @@ export const ModalControlGroup = ({
 
   return (
     <>
-      <WButton disabled={!onPreviousClick} onClick={onPreviousClick} sx={{ ...navigateButtonSx, left }}>
-        <KeyboardArrowLeftIcon sx={{ fontSize: iconSize }} />
-      </WButton>
-      <WButton disabled={!onNextClick} onClick={onNextClick} sx={{ ...navigateButtonSx, right }}>
-        <KeyboardArrowRightIcon sx={{ fontSize: iconSize }} />
-      </WButton>
+      {onPreviousClick && (
+        <WButton onClick={onPreviousClick} sx={{ ...navigateButtonSx, left }}>
+          <KeyboardArrowLeftIcon sx={{ fontSize: iconSize }} />
+        </WButton>
+      )}
+      {onNextClick && (
+        <WButton onClick={onNextClick} sx={{ ...navigateButtonSx, right }}>
+          <KeyboardArrowRightIcon sx={{ fontSize: iconSize }} />
+        </WButton>
+      )}
       {topLeftChildren && <Stack sx={{ position: "absolute", top, left }}>{topLeftChildren}</Stack>}
       <Stack sx={{ position: "absolute", top, right }}>
         <Stack sx={{ flexDirection: "row", gap: "1px" }}>
