@@ -9,17 +9,16 @@ import { isCollectionImage } from "@/utils/isCollectionImage";
 import { isCollectionVideo } from "@/utils/isCollectionVideo";
 
 export const RightContent = ({
-  collectionName,
+  path,
   files,
   controlGroupState
 }: {
-  collectionName: string;
+  path: string;
   files: CollectionFile[];
   controlGroupState: number;
 }) => {
   const [selectedFile, setSelectedFile] = useState<CollectionFile | undefined>(undefined);
-  const getFileUrl = (name: string) =>
-    `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(name)}`;
+  const getFileUrl = (name: string) => `/api/collections/${encodeURIComponent(path)}/${encodeURIComponent(name)}`;
 
   const previewableFiles = files.filter((file) => isCollectionImage(file) || isCollectionVideo(file));
   const selectedIndex = selectedFile
@@ -56,7 +55,7 @@ export const RightContent = ({
             controlGroupState={controlGroupState}
             onLeftButtonClick={() => {}}
             onRightButtonClick={() => {}}
-            onDeleteButtonClick={() => deleteCollectionFile(collectionName, file.name)}
+            onDeleteButtonClick={() => deleteCollectionFile(path, file.name)}
           />
         ))}
       </Stack>
@@ -72,7 +71,7 @@ export const RightContent = ({
         onNextClick={nextFile ? () => setSelectedFile(nextFile) : undefined}
         onSaveButtonClick={(newName) => {
           if (selectedImage && newName !== selectedImage.name) {
-            renameCollectionFile(collectionName, selectedImage.name, newName);
+            renameCollectionFile(path, selectedImage.name, newName);
           }
         }}
         onClose={() => setSelectedFile(undefined)}
@@ -86,7 +85,7 @@ export const RightContent = ({
         onNextClick={nextFile ? () => setSelectedFile(nextFile) : undefined}
         onSaveButtonClick={(newName) => {
           if (selectedVideo && newName !== selectedVideo.name) {
-            renameCollectionFile(collectionName, selectedVideo.name, newName);
+            renameCollectionFile(path, selectedVideo.name, newName);
           }
         }}
         onClose={() => setSelectedFile(undefined)}

@@ -11,6 +11,7 @@ export interface CollectionImage extends CollectionFile {
 export interface Collection {
   name: string;
   files: CollectionFile[];
+  collections: Collection[];
 }
 
 export enum Direction {
