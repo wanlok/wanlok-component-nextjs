@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { alpha, Stack, useTheme } from "@mui/material";
 import {
   Fullscreen as FullscreenIcon,
@@ -55,6 +55,22 @@ export const ModalControlGroup = ({
     backgroundColor: "transparent",
     "&:hover": { backgroundColor: "transparent" }
   };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        onPreviousClick?.();
+      } else if (event.key === "ArrowRight") {
+        onNextClick?.();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onPreviousClick, onNextClick]);
 
   return (
     <>
