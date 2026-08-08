@@ -1,11 +1,11 @@
 export interface CollectionFile {
   name: string;
+  type: string;
 }
 
 export interface CollectionImage extends CollectionFile {
   width: number;
   height: number;
-  contentType: string;
 }
 
 export interface Collection {

@@ -1,37 +1,32 @@
 import { useState } from "react";
-import { alpha, Box, Stack, useMediaQuery, useTheme } from "@mui/material";
-import {
-  Image as ImageIcon,
-  ViewList as ViewListIcon,
-  ZoomIn as ZoomInIcon,
-  ZoomOut as ZoomOutIcon
-} from "@mui/icons-material";
+import { Box, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Image as ImageIcon, ViewList as ViewListIcon } from "@mui/icons-material";
 import { WModal } from "@/components/WModal";
-import { iconButtonSx, WButton } from "@/components/WButton";
 import { TextInput } from "@/components/TextInput";
 import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
 import { ImageMeta } from "@/components/ImageMeta";
+import { ImageModalControlGroup, ImageModalTopControlGroup } from "./ImageModalControlGroup";
 
 const Details = ({
   name,
   onNameChange,
   width,
   height,
-  contentType
+  type
 }: {
   name: string;
   onNameChange: (name: string) => void;
   width: number;
   height: number;
-  contentType: string;
+  type: string;
 }) => (
   <Stack sx={{ p: 2, gap: 2 }}>
     <Stack sx={{ gap: "1px" }}>
       <StyledContainer sx={{ p: 1 }}>
         <TextInput label="Name" value={name} onChange={onNameChange} inputSx={{ flex: 1 }} />
       </StyledContainer>
-      <ImageMeta width={width} height={height} contentType={contentType} />
+      <ImageMeta width={width} height={height} type={type} />
     </Stack>
   </Stack>
 );
@@ -42,7 +37,7 @@ export const ImageModal = ({
   name,
   width,
   height,
-  contentType,
+  type,
   onSaveButtonClick,
   onClose
 }: {
@@ -51,11 +46,11 @@ export const ImageModal = ({
   name: string;
   width: number;
   height: number;
-  contentType: string;
+  type: string;
   onSaveButtonClick: (name: string) => void;
   onClose: () => void;
 }) => {
-  const { breakpoints, palette } = useTheme();
+  const { breakpoints } = useTheme();
   const mobile = useMediaQuery(breakpoints.down("md"));
   const [zoom, setZoom] = useState("fit");
   const [editedName, setEditedName] = useState(name);
@@ -64,20 +59,13 @@ export const ImageModal = ({
     <WModal
       open={open}
       onClose={onClose}
-      width="100vw"
-      height="100dvh"
+      width="80vw"
+      height="80dvh"
       tabs={[{ icon: <ImageIcon sx={{ fontSize: 24 }} />, label: "Image" }]}
       hideLeftLabel
       top={
         mobile ? (
-          <>
-            <WButton onClick={() => setZoom("original")} sx={iconButtonSx}>
-              <ZoomInIcon sx={{ fontSize: 24 }} />
-            </WButton>
-            <WButton onClick={() => setZoom("fit")} sx={iconButtonSx}>
-              <ZoomOutIcon sx={{ fontSize: 24 }} />
-            </WButton>
-          </>
+          <ImageModalTopControlGroup onZoomInClick={() => setZoom("original")} onZoomOutClick={() => setZoom("fit")} />
         ) : undefined
       }
       rightTabs={[{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
@@ -94,13 +82,7 @@ export const ImageModal = ({
         />
       }
       rightChildren={
-        <Details
-          name={editedName}
-          onNameChange={setEditedName}
-          width={width}
-          height={height}
-          contentType={contentType}
-        />
+        <Details name={editedName} onNameChange={setEditedName} width={width} height={height} type={type} />
       }
     >
       <Box sx={{ position: "relative", height: "100%" }}>
@@ -135,28 +117,7 @@ export const ImageModal = ({
           </Box>
         </Stack>
         {!mobile && (
-          <Stack sx={{ position: "absolute", flexDirection: "row", top: 8, left: 8, gap: "1px" }}>
-            <WButton
-              onClick={() => setZoom("original")}
-              sx={{
-                ...iconButtonSx,
-                backgroundColor: alpha(palette.primary.main, 0.9),
-                "&:hover": { backgroundColor: palette.primary.main }
-              }}
-            >
-              <ZoomInIcon sx={{ fontSize: 28 }} />
-            </WButton>
-            <WButton
-              onClick={() => setZoom("fit")}
-              sx={{
-                ...iconButtonSx,
-                backgroundColor: alpha(palette.primary.main, 0.9),
-                "&:hover": { backgroundColor: palette.primary.main }
-              }}
-            >
-              <ZoomOutIcon sx={{ fontSize: 28 }} />
-            </WButton>
-          </Stack>
+          <ImageModalControlGroup onZoomInClick={() => setZoom("original")} onZoomOutClick={() => setZoom("fit")} />
         )}
       </Box>
     </WModal>

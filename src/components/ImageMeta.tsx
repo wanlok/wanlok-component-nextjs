@@ -1,18 +1,10 @@
 import { Stack, Typography } from "@mui/material";
 
-export const ImageMeta = ({
-  width,
-  height,
-  contentType
-}: {
-  width: number;
-  height: number;
-  contentType: string;
-}) => {
+export const ImageMeta = ({ width, height, type }: { width: number; height: number; type: string }) => {
   return (
     <Stack>
       <Typography>{`${width} x ${height}`}</Typography>
-      <Typography>{contentType}</Typography>
+      <Typography>{type}</Typography>
     </Stack>
   );
 };

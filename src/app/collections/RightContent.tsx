@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Stack } from "@mui/material";
 import { ImageTitle } from "@/components/ImageTitle";
-import { ImageModal } from "./ImageModal";
+import { ImageModal } from "@/components/ImageModal";
+import { VideoModal } from "@/components/VideoModal";
 import { deleteCollectionFile, renameCollectionFile } from "./actions";
 import { CollectionFile, CollectionImage } from "@/Types";
 import { isCollectionImage } from "@/utils/isCollectionImage";
+import { isCollectionVideo } from "@/utils/isCollectionVideo";
 
 export const RightContent = ({
   collectionName,
@@ -15,7 +17,8 @@ export const RightContent = ({
   files: CollectionFile[];
   controlGroupState: number;
 }) => {
-  const [selectedFile, setSelectedFile] = useState<CollectionImage | undefined>(undefined);
+  const [selectedImage, setSelectedImage] = useState<CollectionImage | undefined>(undefined);
+  const [selectedVideo, setSelectedVideo] = useState<CollectionFile | undefined>(undefined);
   const getFileUrl = (name: string) =>
     `/api/collections/${encodeURIComponent(collectionName)}/${encodeURIComponent(name)}`;
 
@@ -34,7 +37,13 @@ export const RightContent = ({
             imageUrl={getFileUrl(file.name)}
             imageSx={{ objectPosition: "top" }}
             name={file.name}
-            onClick={isCollectionImage(file) ? () => setSelectedFile(file) : undefined}
+            onClick={
+              isCollectionImage(file)
+                ? () => setSelectedImage(file)
+                : isCollectionVideo(file)
+                  ? () => setSelectedVideo(file)
+                  : undefined
+            }
             aspectRatio="16/9"
             scrollHorizontally={false}
             controlGroupState={controlGroupState}
@@ -45,19 +54,31 @@ export const RightContent = ({
         ))}
       </Stack>
       <ImageModal
-        key={selectedFile?.name}
-        open={selectedFile !== undefined}
-        src={selectedFile ? getFileUrl(selectedFile.name) : ""}
-        name={selectedFile?.name ?? ""}
-        width={selectedFile?.width ?? 0}
-        height={selectedFile?.height ?? 0}
-        contentType={selectedFile?.contentType ?? ""}
+        key={selectedImage?.name}
+        open={selectedImage !== undefined}
+        src={selectedImage ? getFileUrl(selectedImage.name) : ""}
+        name={selectedImage?.name ?? ""}
+        width={selectedImage?.width ?? 0}
+        height={selectedImage?.height ?? 0}
+        type={selectedImage?.type ?? ""}
         onSaveButtonClick={(newName) => {
-          if (selectedFile && newName !== selectedFile.name) {
-            renameCollectionFile(collectionName, selectedFile.name, newName);
+          if (selectedImage && newName !== selectedImage.name) {
+            renameCollectionFile(collectionName, selectedImage.name, newName);
           }
         }}
-        onClose={() => setSelectedFile(undefined)}
+        onClose={() => setSelectedImage(undefined)}
+      />
+      <VideoModal
+        key={selectedVideo?.name}
+        open={selectedVideo !== undefined}
+        src={selectedVideo ? getFileUrl(selectedVideo.name) : ""}
+        name={selectedVideo?.name ?? ""}
+        onSaveButtonClick={(newName) => {
+          if (selectedVideo && newName !== selectedVideo.name) {
+            renameCollectionFile(collectionName, selectedVideo.name, newName);
+          }
+        }}
+        onClose={() => setSelectedVideo(undefined)}
       />
     </Stack>
   );

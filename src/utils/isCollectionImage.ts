@@ -1,3 +1,3 @@
 import { CollectionFile, CollectionImage } from "@/Types";
 
-export const isCollectionImage = (file: CollectionFile): file is CollectionImage => "contentType" in file;
+export const isCollectionImage = (file: CollectionFile): file is CollectionImage => "width" in file;

@@ -3,8 +3,10 @@ import { join } from "node:path";
 import { imageSizeFromFile } from "image-size/fromFile";
 import { Collection, CollectionFile, CollectionImage } from "@/Types";
 import { getContentTypeFromImageType } from "@/utils/getContentTypeFromImageType";
+import { getContentTypeFromFile } from "@/utils/getContentTypeFromFile";
 
 const ignoreFiles = [".DS_Store"];
+const fallbackContentType = "application/octet-stream";
 
 const getCollectionFile = async (filePath: string, name: string): Promise<CollectionFile> => {
   const { width, height, type } = await imageSizeFromFile(filePath).catch(() => ({
@@ -12,12 +14,12 @@ const getCollectionFile = async (filePath: string, name: string): Promise<Collec
     height: 0,
     type: undefined
   }));
-  const contentType = type ? getContentTypeFromImageType(type) : undefined;
-  if (!contentType) {
-    return { name };
+  const imageContentType = type ? getContentTypeFromImageType(type) : undefined;
+  if (imageContentType) {
+    const image: CollectionImage = { name, type: imageContentType, width, height };
+    return image;
   }
-  const image: CollectionImage = { name, width, height, contentType };
-  return image;
+  return { name, type: (await getContentTypeFromFile(filePath)) ?? fallbackContentType };
 };
 
 export const getCollections = async (): Promise<Collection[]> => {
