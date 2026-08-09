@@ -5,7 +5,7 @@ import { WModal } from "@/components/WModal";
 import { TextInput } from "@/components/TextInput";
 import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
-import { ImageMeta } from "@/components/ImageMeta";
+import { ImageMetaContainer } from "@/components/ImageMetaContainer";
 import { ImageModalImage } from "@/components/ImageModalImage";
 import { ImageModalControlGroup, ImageModalTopControlGroup } from "./ImageModalControlGroup";
 import { useModalControlGroup } from "./useModalControlGroup";
@@ -28,8 +28,8 @@ const Details = ({
       <StyledContainer sx={{ p: 1 }}>
         <TextInput label="Name" value={name} onChange={onNameChange} inputSx={{ flex: 1 }} />
       </StyledContainer>
-      <ImageMeta width={width} height={height} type={type} />
     </Stack>
+    <ImageMetaContainer imageMeta={{ width, height, type }} />
   </Stack>
 );
 

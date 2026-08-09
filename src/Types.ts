@@ -8,6 +8,8 @@ export interface CollectionImage extends CollectionFile {
   height: number;
 }
 
+export type ImageMeta = { width: number; height: number; type: string };
+
 export interface Collection {
   name: string;
   files: CollectionFile[];
