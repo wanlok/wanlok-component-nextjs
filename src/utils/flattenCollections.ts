@@ -6,8 +6,15 @@ export interface FlattenedCollection {
   path: string[];
 }
 
-export const flattenCollections = (collections: Collection[], parentPath: string[] = []): FlattenedCollection[] =>
+export const flattenCollections = (
+  collections: Collection[],
+  isExpanded: (collection: Collection) => boolean,
+  parentPath: string[] = []
+): FlattenedCollection[] =>
   collections.flatMap((collection) => {
     const path = [...parentPath, collection.name];
-    return [{ collection, depth: path.length - 1, path }, ...flattenCollections(collection.collections, path)];
+    const entry = { collection, depth: path.length - 1, path };
+    return isExpanded(collection)
+      ? [entry, ...flattenCollections(collection.collections, isExpanded, path)]
+      : [entry];
   });

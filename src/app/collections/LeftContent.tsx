@@ -10,6 +10,7 @@ import { flattenCollections } from "@/utils/flattenCollections";
 export const LeftContent = ({
   collections,
   selectedCollection,
+  selectedPath,
   folderControlGroupState,
   setPanelOpened,
   selectCollection,
@@ -17,12 +18,13 @@ export const LeftContent = ({
 }: {
   collections: Collection[];
   selectedCollection: Collection | undefined;
+  selectedPath: Collection[];
   folderControlGroupState: number;
   setPanelOpened: Dispatch<SetStateAction<boolean>>;
   selectCollection: (path: string[]) => void;
   deleteCollection: (path: string[]) => void;
 }) => {
-  const items = flattenCollections(collections);
+  const items = flattenCollections(collections, (collection) => selectedPath.includes(collection));
   return (
     <>
       <WCardList

@@ -65,6 +65,7 @@ export const CollectionsView = ({
           <LeftContent
             collections={collections}
             selectedCollection={displayedFolder}
+            selectedPath={selectedPath}
             folderControlGroupState={effectiveFolderControlGroupState}
             setPanelOpened={setPanelOpened}
             selectCollection={(path) => router.push(`/collections/${path.map(encodeURIComponent).join("/")}`)}
