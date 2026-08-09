@@ -68,7 +68,9 @@ export const CollectionsView = ({
             selectedPath={selectedPath}
             folderControlGroupState={effectiveFolderControlGroupState}
             setPanelOpened={setPanelOpened}
-            selectCollection={(path) => router.push(`/collections/${path.map(encodeURIComponent).join("/")}`)}
+            selectCollection={(path) =>
+              router.push(`/collections/${path.map(encodeURIComponent).join("/")}`, { scroll: false })
+            }
             deleteCollection={(path) => deleteCollection(path.join("/"))}
           />
         </>
