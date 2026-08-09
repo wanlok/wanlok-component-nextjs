@@ -2,14 +2,6 @@ import { Stack, Typography } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { iconButtonSx, WButton } from "../../components/WButton";
 import { bottomSx, LayoutHeader, topSx } from "../../components/LayoutHeader";
-import { StyledContainer } from "@/components/StyledContainer";
-import { SelectInput } from "@/components/SelectInput";
-
-export interface FilterLevel {
-  collectionNames: string[];
-  selectedCollectionName: string;
-  onSelectedCollectionNameChange: (name: string) => void;
-}
 
 const Top = ({
   name,
@@ -34,43 +26,19 @@ const Top = ({
   </Stack>
 );
 
-const Bottom = ({ filterLevels }: { filterLevels: FilterLevel[] }) => {
-  if (filterLevels.length === 0) {
-    return <></>;
-  }
-  return (
-    <Stack sx={[bottomSx]}>
-      <StyledContainer sx={{ flex: 1, flexDirection: "row", p: 1, gap: 1 }}>
-        {filterLevels.map(({ collectionNames, selectedCollectionName, onSelectedCollectionNameChange }, index) => (
-          <Stack key={index} sx={{ flex: 1 }}>
-            <SelectInput
-              items={[
-                { label: "All", value: "" },
-                ...collectionNames.map((name) => ({ label: name, value: name }))
-              ]}
-              value={selectedCollectionName}
-              onChange={onSelectedCollectionNameChange}
-            />
-          </Stack>
-        ))}
-      </StyledContainer>
-    </Stack>
-  );
-};
+const Bottom = () => <Stack sx={[bottomSx, {}]}></Stack>;
 
 export const RightHeader = ({
   name,
   controlGroupState,
-  onDeleteButtonClick,
-  filterLevels
+  onDeleteButtonClick
 }: {
   name: string;
   controlGroupState: number;
   onDeleteButtonClick: () => void;
-  filterLevels: FilterLevel[];
 }) => (
   <LayoutHeader
     top={<Top name={name} controlGroupState={controlGroupState} onDeleteButtonClick={onDeleteButtonClick} />}
-    bottom={<Bottom filterLevels={filterLevels} />}
+    bottom={<Bottom />}
   />
 );

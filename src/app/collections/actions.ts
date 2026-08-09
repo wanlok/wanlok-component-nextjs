@@ -22,20 +22,20 @@ export const deleteCollection = async (name: string) => {
   revalidatePath("/collections", "layout");
 };
 
-export const renameCollectionFile = async (path: string, oldFileName: string, newFileName: string) => {
+export const renameCollectionFile = async (collectionName: string, oldFileName: string, newFileName: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath || path.includes("..") || oldFileName.includes("..") || newFileName.includes("..")) {
+  if (!directoryPath || oldFileName.includes("..") || newFileName.includes("..")) {
     return;
   }
-  await rename(join(directoryPath, path, oldFileName), join(directoryPath, path, newFileName));
+  await rename(join(directoryPath, collectionName, oldFileName), join(directoryPath, collectionName, newFileName));
   revalidatePath("/collections", "layout");
 };
 
-export const deleteCollectionFile = async (path: string, fileName: string) => {
+export const deleteCollectionFile = async (collectionName: string, fileName: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath || path.includes("..") || fileName.includes("..")) {
+  if (!directoryPath || fileName.includes("..")) {
     return;
   }
-  await rm(join(directoryPath, path, fileName));
+  await rm(join(directoryPath, collectionName, fileName));
   revalidatePath("/collections", "layout");
 };

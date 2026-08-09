@@ -7,7 +7,7 @@ const Page = async () => {
   if (collections.length > 0) {
     redirect(`/collections/${encodeURIComponent(collections[0].name)}`);
   }
-  return <CollectionsView collections={collections} selectedCollectionName={undefined} path={[]} />;
+  return <CollectionsView collections={collections} selectedCollectionName={undefined} />;
 };
 
 export default Page;
