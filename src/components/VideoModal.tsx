@@ -36,33 +36,40 @@ export const VideoModal = ({
   onClose: () => void;
 }) => {
   const [editedName, setEditedName] = useState(name);
-  const { isFullScreen, onFullScreenClick, isDetailsHidden, onDetailsClick } = useModalControlGroup();
+  const { isFullScreen, onFullScreenClick, exitFullScreen, isRightHidden, onDetailsClick } = useModalControlGroup();
+
+  const closeModal = () => {
+    exitFullScreen();
+    onClose();
+  };
+
+  const rightTabs = [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }];
 
   return (
     <WModal
       open={open}
-      onClose={onClose}
+      onClose={closeModal}
       width="80vw"
       height="80dvh"
       isFullScreen={isFullScreen}
       tabs={[{ icon: <SmartDisplayIcon sx={{ fontSize: 24 }} />, label: "Video" }]}
       hideLeftLabel
-      rightTabs={isDetailsHidden ? undefined : [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
+      rightTabs={isRightHidden ? undefined : rightTabs}
       rightSelectedTab={0}
       rightBottom={
-        isDetailsHidden ? undefined : (
+        isRightHidden ? undefined : (
           <YesNoButtons
             yesLabel="Save"
             onYesClick={() => {
               onSaveButtonClick(editedName);
-              onClose();
+              closeModal();
             }}
             noLabel="Cancel"
-            onNoClick={onClose}
+            onNoClick={closeModal}
           />
         )
       }
-      rightChildren={isDetailsHidden ? undefined : <Details name={editedName} onNameChange={setEditedName} />}
+      rightChildren={isRightHidden ? undefined : <Details name={editedName} onNameChange={setEditedName} />}
     >
       <Box sx={{ position: "relative", height: "100%" }}>
         <Stack sx={{ height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: "common.black" }}>
@@ -78,8 +85,10 @@ export const VideoModal = ({
           onNextClick={onNextClick}
           isFullScreen={isFullScreen}
           onFullScreenClick={onFullScreenClick}
-          isDetailsHidden={isDetailsHidden}
+          isRightHidden={isRightHidden}
           onDetailsClick={onDetailsClick}
+          tabs={rightTabs}
+          selectedTab={0}
         />
       </Box>
     </WModal>

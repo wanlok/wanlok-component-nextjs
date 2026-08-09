@@ -60,11 +60,11 @@ export const ImageModal = ({
   const mobile = useMediaQuery(breakpoints.down("md"));
   const [zoom, setZoom] = useState("fit");
   const [editedName, setEditedName] = useState(name);
-  const { isFullScreen, onFullScreenClick, exitFullScreen, isDetailsHidden, onDetailsClick } = useModalControlGroup();
+  const { isFullScreen, onFullScreenClick, exitFullScreen, isRightHidden, onDetailsClick } = useModalControlGroup();
   const [scrollbarWidths, setScrollbarWidths] = useState({ bottom: 0, right: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
   const fullScreen = mobile || isFullScreen;
-  const detailsHidden = mobile ? false : isDetailsHidden;
+  const rightHidden = mobile ? false : isRightHidden;
 
   useEffect(() => {
     const element = scrollRef.current;
@@ -88,6 +88,8 @@ export const ImageModal = ({
     onClose();
   };
 
+  const rightTabs = [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }];
+
   return (
     <WModal
       open={open}
@@ -102,10 +104,10 @@ export const ImageModal = ({
           <ImageModalTopControlGroup onZoomInClick={() => setZoom("original")} onZoomOutClick={() => setZoom("fit")} />
         ) : undefined
       }
-      rightTabs={detailsHidden ? undefined : [{ icon: <ViewListIcon sx={{ fontSize: 24 }} />, label: "Details" }]}
+      rightTabs={rightHidden ? undefined : rightTabs}
       rightSelectedTab={0}
       rightBottom={
-        detailsHidden ? undefined : (
+        rightHidden ? undefined : (
           <YesNoButtons
             yesLabel="Save"
             onYesClick={() => {
@@ -118,7 +120,7 @@ export const ImageModal = ({
         )
       }
       rightChildren={
-        detailsHidden ? undefined : (
+        rightHidden ? undefined : (
           <Details name={editedName} onNameChange={setEditedName} width={width} height={height} type={type} />
         )
       }
@@ -146,8 +148,10 @@ export const ImageModal = ({
             onZoomOutClick={() => setZoom("fit")}
             isFullScreen={isFullScreen}
             onFullScreenClick={onFullScreenClick}
-            isDetailsHidden={isDetailsHidden}
+            isRightHidden={isRightHidden}
             onDetailsClick={onDetailsClick}
+            tabs={rightTabs}
+            selectedTab={0}
             onPreviousClick={onPreviousClick}
             onNextClick={onNextClick}
             scrollbarWidths={scrollbarWidths}
