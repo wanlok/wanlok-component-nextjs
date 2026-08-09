@@ -135,10 +135,11 @@ export const ImageModal = ({
           <Box
             sx={{
               position: "relative",
-              display: "inline-block",
               lineHeight: 0,
               m: "auto",
-              ...(zoom === "fit" && { maxWidth: "100%" })
+              ...(zoom === "fit" && fullScreen
+                ? { display: "flex", height: "100%", maxWidth: "100%", alignItems: "center", justifyContent: "center" }
+                : { display: "inline-block", ...(zoom === "fit" && { maxWidth: "100%" }) })
             }}
           >
             <Box
@@ -156,7 +157,7 @@ export const ImageModal = ({
               }}
               sx={{
                 display: "block",
-                ...(zoom === "fit" && { maxWidth: "100%", maxHeight: fullScreen ? "100dvh" : "80dvh" })
+                ...(zoom === "fit" && { maxWidth: "100%", maxHeight: fullScreen ? "100%" : "80dvh" })
               }}
             />
           </Box>

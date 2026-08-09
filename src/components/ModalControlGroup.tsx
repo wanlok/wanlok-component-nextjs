@@ -9,6 +9,8 @@ import {
 } from "@mui/icons-material";
 import { iconButtonSx, WButton } from "@/components/WButton";
 
+const iconSize = 64;
+
 export const ModalControlGroup = ({
   onPreviousClick,
   onNextClick,
@@ -35,8 +37,6 @@ export const ModalControlGroup = ({
     backgroundColor: alpha(palette.primary.main, 0.9),
     "&:hover": { backgroundColor: palette.primary.main }
   };
-
-  const iconSize = 64;
 
   const space = isFullScreen ? 0 : 8;
 
