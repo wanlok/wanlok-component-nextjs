@@ -60,7 +60,7 @@ export const ImageModal = ({
   const mobile = useMediaQuery(breakpoints.down("md"));
   const [zoom, setZoom] = useState("fit");
   const [editedName, setEditedName] = useState(name);
-  const { isFullScreen, onFullScreenClick, isDetailsHidden, onDetailsClick } = useModalControlGroup();
+  const { isFullScreen, onFullScreenClick, exitFullScreen, isDetailsHidden, onDetailsClick } = useModalControlGroup();
   const [scrollbarWidths, setScrollbarWidths] = useState({ bottom: 0, right: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
   const fullScreen = mobile || isFullScreen;
@@ -83,10 +83,15 @@ export const ImageModal = ({
     return () => resizeObserver.disconnect();
   }, [zoom]);
 
+  const closeModal = () => {
+    exitFullScreen();
+    onClose();
+  };
+
   return (
     <WModal
       open={open}
-      onClose={onClose}
+      onClose={closeModal}
       width="80vw"
       height="80dvh"
       isFullScreen={isFullScreen}
@@ -105,10 +110,10 @@ export const ImageModal = ({
             yesLabel="Save"
             onYesClick={() => {
               onSaveButtonClick(editedName);
-              onClose();
+              closeModal();
             }}
             noLabel="Cancel"
-            onNoClick={onClose}
+            onNoClick={closeModal}
           />
         )
       }
