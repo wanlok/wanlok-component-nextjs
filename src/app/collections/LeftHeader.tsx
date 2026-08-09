@@ -12,26 +12,31 @@ const Top = () => (
 const Bottom = ({
   folderControlGroupState,
   onAddButtonClick,
-  onDeleteButtonClick
+  onDeleteButtonClick,
+  hideDeleteButton
 }: {
   folderControlGroupState: number;
   onAddButtonClick: () => void;
   onDeleteButtonClick: () => void;
+  hideDeleteButton: boolean;
 }) => (
   <Stack sx={[bottomSx, { gap: "1px" }]}>
     <WButton onClick={onAddButtonClick} sx={iconButtonSx}>
       <AddIcon sx={{ fontSize: 26 }} />
     </WButton>
-    <WButton isActivated={folderControlGroupState === 1} sx={iconButtonSx} onClick={onDeleteButtonClick}>
-      <CloseIcon sx={{ fontSize: 24 }} />
-    </WButton>
+    {!hideDeleteButton && (
+      <WButton isActivated={folderControlGroupState === 1} sx={iconButtonSx} onClick={onDeleteButtonClick}>
+        <CloseIcon sx={{ fontSize: 24 }} />
+      </WButton>
+    )}
   </Stack>
 );
 
 export const LeftHeader = ({
   folderControlGroupState,
   onAddButtonClick,
-  onDeleteButtonClick
+  onDeleteButtonClick,
+  hideDeleteButton
 }: {
   numberOfCollections: number;
   folderControlGroupState: number;
@@ -39,6 +44,7 @@ export const LeftHeader = ({
   onDeleteButtonClick: () => void;
   onUploadButtonClick: () => void;
   onDownloadButtonClick: () => void;
+  hideDeleteButton: boolean;
 }) => (
   <LayoutHeader
     top={<Top />}
@@ -47,6 +53,7 @@ export const LeftHeader = ({
         folderControlGroupState={folderControlGroupState}
         onAddButtonClick={onAddButtonClick}
         onDeleteButtonClick={onDeleteButtonClick}
+        hideDeleteButton={hideDeleteButton}
       />
     }
   />

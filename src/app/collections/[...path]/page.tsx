@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCollections } from "../getCollections";
 import { CollectionsView } from "../CollectionsView";
+import { isNoDelete } from "@/utils/isNoDelete";
 
 const Page = async ({ params }: { params: Promise<{ path: string[] }> }) => {
   const { path } = await params;
@@ -12,7 +13,7 @@ const Page = async ({ params }: { params: Promise<{ path: string[] }> }) => {
     }
     redirect("/collections");
   }
-  return <CollectionsView collections={collections} path={decodedPath} />;
+  return <CollectionsView collections={collections} path={decodedPath} hideDeleteButton={isNoDelete()} />;
 };
 
 export default Page;

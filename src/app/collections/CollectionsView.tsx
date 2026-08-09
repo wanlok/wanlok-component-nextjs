@@ -14,10 +14,12 @@ import { addCollection, deleteCollection } from "./actions";
 
 export const CollectionsView = ({
   collections,
-  path
+  path,
+  hideDeleteButton
 }: {
   collections: Collection[];
   path: string[];
+  hideDeleteButton: boolean;
 }) => {
   const router = useRouter();
   const [panelOpened, setPanelOpened] = useState(false);
@@ -58,6 +60,7 @@ export const CollectionsView = ({
             onDeleteButtonClick={() => setFolderControlGroupState(effectiveFolderControlGroupState === 1 ? 0 : 1)}
             onUploadButtonClick={() => {}}
             onDownloadButtonClick={() => {}}
+            hideDeleteButton={hideDeleteButton}
           />
           <LeftContent
             collections={collections}
@@ -79,6 +82,7 @@ export const CollectionsView = ({
         name={selectedCollectionName ?? ""}
         controlGroupState={effectiveControlGroupState}
         onDeleteButtonClick={() => setControlGroupState(effectiveControlGroupState === 3 ? 0 : 3)}
+        hideDeleteButton={hideDeleteButton}
       />
       <RightContent path={displayedPath} files={displayedFiles} controlGroupState={effectiveControlGroupState} />
       <CollectionModal
