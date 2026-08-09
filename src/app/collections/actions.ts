@@ -13,29 +13,29 @@ export const addCollection = async (name: string) => {
   revalidatePath("/collections", "layout");
 };
 
-export const deleteCollection = async (name: string) => {
+export const deleteCollection = async (path: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath) {
+  if (!directoryPath || path.includes("..")) {
     return;
   }
-  await rm(join(directoryPath, name), { recursive: true });
+  await rm(join(directoryPath, path), { recursive: true });
   revalidatePath("/collections", "layout");
 };
 
-export const renameCollectionFile = async (collectionName: string, oldFileName: string, newFileName: string) => {
+export const renameCollectionFile = async (path: string, oldFileName: string, newFileName: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath || oldFileName.includes("..") || newFileName.includes("..")) {
+  if (!directoryPath || path.includes("..") || oldFileName.includes("..") || newFileName.includes("..")) {
     return;
   }
-  await rename(join(directoryPath, collectionName, oldFileName), join(directoryPath, collectionName, newFileName));
+  await rename(join(directoryPath, path, oldFileName), join(directoryPath, path, newFileName));
   revalidatePath("/collections", "layout");
 };
 
-export const deleteCollectionFile = async (collectionName: string, fileName: string) => {
+export const deleteCollectionFile = async (path: string, fileName: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath || fileName.includes("..")) {
+  if (!directoryPath || path.includes("..") || fileName.includes("..")) {
     return;
   }
-  await rm(join(directoryPath, collectionName, fileName));
+  await rm(join(directoryPath, path, fileName));
   revalidatePath("/collections", "layout");
 };

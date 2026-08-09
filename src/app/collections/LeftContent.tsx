@@ -5,41 +5,44 @@ import { WCardList } from "../../components/WCardList";
 import { iconButtonSx, WButton } from "../../components/WButton";
 import { PanelRow } from "../../components/PanelRow";
 import { Collection } from "@/Types";
+import { flattenCollections } from "@/utils/flattenCollections";
 
 export const LeftContent = ({
   collections,
-  selectedCollectionName,
+  selectedCollection,
   folderControlGroupState,
   setPanelOpened,
   selectCollection,
   deleteCollection
 }: {
   collections: Collection[];
-  selectedCollectionName: string | undefined;
+  selectedCollection: Collection | undefined;
   folderControlGroupState: number;
   setPanelOpened: Dispatch<SetStateAction<boolean>>;
-  selectCollection: (collection: Collection) => void;
-  deleteCollection: (collection: Collection) => void;
+  selectCollection: (path: string[]) => void;
+  deleteCollection: (path: string[]) => void;
 }) => {
+  const items = flattenCollections(collections);
   return (
     <>
       <WCardList
-        items={collections}
-        renderContent={(collection: Collection) => {
-          const Icon = collection.name === selectedCollectionName ? FolderIcon : FolderOutlinedIcon;
-          return <PanelRow icon={<Icon sx={{ fontSize: 24 }} />} title={collection.name} />;
+        items={items}
+        getDepth={(item) => item.depth}
+        renderContent={(item) => {
+          const Icon = item.collection === selectedCollection ? FolderIcon : FolderOutlinedIcon;
+          return <PanelRow icon={<Icon sx={{ fontSize: 24 }} />} title={item.collection.name} />;
         }}
-        onContentClick={(collection?: Collection) => {
-          if (collection) {
-            selectCollection(collection);
+        onContentClick={(item) => {
+          if (item) {
+            selectCollection(item.path);
           }
           setPanelOpened(false);
         }}
-        renderRightContent={(collection: Collection) => (
+        renderRightContent={(item) => (
           <Stack>
             {folderControlGroupState === 1 && (
               <WButton
-                onClick={() => deleteCollection(collection)}
+                onClick={() => deleteCollection(item.path)}
                 sx={{ ...iconButtonSx, backgroundColor: "transparent", "&:hover": { backgroundColor: "action.hover" } }}
               >
                 <CloseIcon sx={{ fontSize: 24 }} />

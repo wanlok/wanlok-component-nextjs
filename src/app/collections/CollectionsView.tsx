@@ -14,19 +14,34 @@ import { addCollection, deleteCollection } from "./actions";
 
 export const CollectionsView = ({
   collections,
-  selectedCollectionName
+  path
 }: {
   collections: Collection[];
-  selectedCollectionName: string | undefined;
+  path: string[];
 }) => {
   const router = useRouter();
   const [panelOpened, setPanelOpened] = useState(false);
   const [opened, setOpened] = useState(false);
   const [folderControlGroupState, setFolderControlGroupState] = useState(0);
   const [controlGroupState, setControlGroupState] = useState(0);
-  const selectedCollection = collections.find((collection) => collection.name === selectedCollectionName);
+
+  const selectedPath: Collection[] = [];
+  let currentList = collections;
+  for (const name of path) {
+    const next = currentList.find((collection) => collection.name === name);
+    if (!next) {
+      break;
+    }
+    selectedPath.push(next);
+    currentList = next.collections;
+  }
+
+  const selectedCollectionName = selectedPath[0]?.name;
+  const displayedFolder = selectedPath.at(-1);
+  const displayedPath = selectedPath.map((collection) => collection.name).join("/");
+  const displayedFiles = displayedFolder?.files ?? [];
   const effectiveFolderControlGroupState = collections.length === 0 ? 0 : folderControlGroupState;
-  const effectiveControlGroupState = (selectedCollection?.files.length ?? 0) === 0 ? 0 : controlGroupState;
+  const effectiveControlGroupState = displayedFiles.length === 0 ? 0 : controlGroupState;
 
   return (
     <LayoutPanel
@@ -46,11 +61,11 @@ export const CollectionsView = ({
           />
           <LeftContent
             collections={collections}
-            selectedCollectionName={selectedCollectionName}
+            selectedCollection={displayedFolder}
             folderControlGroupState={effectiveFolderControlGroupState}
             setPanelOpened={setPanelOpened}
-            selectCollection={(collection) => router.push(`/collections/${encodeURIComponent(collection.name)}`)}
-            deleteCollection={(collection) => deleteCollection(collection.name)}
+            selectCollection={(path) => router.push(`/collections/${path.map(encodeURIComponent).join("/")}`)}
+            deleteCollection={(path) => deleteCollection(path.join("/"))}
           />
         </>
       }
@@ -61,15 +76,11 @@ export const CollectionsView = ({
       }
     >
       <RightHeader
-        name={selectedCollection?.name ?? ""}
+        name={selectedCollectionName ?? ""}
         controlGroupState={effectiveControlGroupState}
         onDeleteButtonClick={() => setControlGroupState(effectiveControlGroupState === 3 ? 0 : 3)}
       />
-      <RightContent
-        collectionName={selectedCollection?.name ?? ""}
-        files={selectedCollection?.files ?? []}
-        controlGroupState={effectiveControlGroupState}
-      />
+      <RightContent path={displayedPath} files={displayedFiles} controlGroupState={effectiveControlGroupState} />
       <CollectionModal
         open={opened}
         onClose={() => setOpened(false)}
