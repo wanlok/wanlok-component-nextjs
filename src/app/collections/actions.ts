@@ -3,6 +3,7 @@
 import { mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { revalidatePath } from "next/cache";
+import { invalidateCollectionsCache } from "./getCollections";
 
 export const addCollection = async (name: string) => {
   const directoryPath = process.env.DIRECTORY_PATH;
@@ -10,6 +11,7 @@ export const addCollection = async (name: string) => {
     return;
   }
   await mkdir(join(directoryPath, name));
+  invalidateCollectionsCache();
   revalidatePath("/collections", "layout");
 };
 
@@ -19,6 +21,7 @@ export const deleteCollection = async (path: string) => {
     return;
   }
   await rm(join(directoryPath, path), { recursive: true });
+  invalidateCollectionsCache();
   revalidatePath("/collections", "layout");
 };
 
@@ -28,6 +31,7 @@ export const renameCollectionFile = async (path: string, oldFileName: string, ne
     return;
   }
   await rename(join(directoryPath, path, oldFileName), join(directoryPath, path, newFileName));
+  invalidateCollectionsCache();
   revalidatePath("/collections", "layout");
 };
 
@@ -37,5 +41,6 @@ export const deleteCollectionFile = async (path: string, fileName: string) => {
     return;
   }
   await rm(join(directoryPath, path, fileName));
+  invalidateCollectionsCache();
   revalidatePath("/collections", "layout");
 };

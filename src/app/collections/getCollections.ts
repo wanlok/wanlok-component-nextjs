@@ -1,6 +1,5 @@
 import { readdir, realpath } from "node:fs/promises";
 import { join } from "node:path";
-import { unstable_cache } from "next/cache";
 import { Collection, CollectionFile } from "@/Types";
 import { compareFileNames } from "@/utils/compareFileNames";
 
@@ -43,16 +42,19 @@ const getCollectionsFromDisk = async (directoryPath: string): Promise<Collection
   return result;
 };
 
-const getCachedCollections = unstable_cache(getCollectionsFromDisk, ["collections"], { tags: ["collections"] });
+let cachedCollections: Collection[] | undefined;
+
+export const invalidateCollectionsCache = () => {
+  cachedCollections = undefined;
+};
 
 export const getCollections = async (): Promise<Collection[]> => {
-  console.time("getCollections total");
   const directoryPath = process.env.DIRECTORY_PATH;
   if (!directoryPath) {
-    console.timeEnd("getCollections total");
     return [];
   }
-  const result = await getCachedCollections(directoryPath);
-  console.timeEnd("getCollections total");
-  return result;
+  if (!cachedCollections) {
+    cachedCollections = await getCollectionsFromDisk(directoryPath);
+  }
+  return cachedCollections;
 };
