@@ -32,14 +32,11 @@ const getCollection = async (
 };
 
 const getCollectionsFromDisk = async (directoryPath: string): Promise<Collection[]> => {
-  console.time("getCollectionsFromDisk");
   const entries = await readdir(directoryPath, { withFileTypes: true });
   const folders = entries.filter((entry) => entry.isDirectory());
-  const result = await Promise.all(
+  return Promise.all(
     folders.map((folder) => getCollection(join(directoryPath, folder.name), folder.name, new Set()))
   );
-  console.timeEnd("getCollectionsFromDisk");
-  return result;
 };
 
 let cachedCollectionsPromise: Promise<Collection[]> | undefined;
