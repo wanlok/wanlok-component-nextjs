@@ -1,5 +1,6 @@
 import { readdir, realpath } from "node:fs/promises";
 import { join } from "node:path";
+import { unstable_cache } from "next/cache";
 import { Collection, CollectionFile } from "@/Types";
 import { compareFileNames } from "@/utils/compareFileNames";
 
@@ -31,14 +32,27 @@ const getCollection = async (
   return { name, files, collections };
 };
 
-export const getCollections = async (): Promise<Collection[]> => {
-  const directoryPath = process.env.DIRECTORY_PATH;
-  if (!directoryPath) {
-    return [];
-  }
+const getCollectionsFromDisk = async (directoryPath: string): Promise<Collection[]> => {
+  console.time("getCollectionsFromDisk");
   const entries = await readdir(directoryPath, { withFileTypes: true });
   const folders = entries.filter((entry) => entry.isDirectory());
-  return Promise.all(
+  const result = await Promise.all(
     folders.map((folder) => getCollection(join(directoryPath, folder.name), folder.name, new Set()))
   );
+  console.timeEnd("getCollectionsFromDisk");
+  return result;
+};
+
+const getCachedCollections = unstable_cache(getCollectionsFromDisk, ["collections"], { tags: ["collections"] });
+
+export const getCollections = async (): Promise<Collection[]> => {
+  console.time("getCollections total");
+  const directoryPath = process.env.DIRECTORY_PATH;
+  if (!directoryPath) {
+    console.timeEnd("getCollections total");
+    return [];
+  }
+  const result = await getCachedCollections(directoryPath);
+  console.timeEnd("getCollections total");
+  return result;
 };
