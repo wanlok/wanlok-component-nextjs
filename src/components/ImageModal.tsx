@@ -6,6 +6,7 @@ import { TextInput } from "@/components/TextInput";
 import { StyledContainer } from "@/components/StyledContainer";
 import { YesNoButtons } from "@/components/YesNoButtons";
 import { ImageMeta } from "@/components/ImageMeta";
+import { ImageModalImage } from "@/components/ImageModalImage";
 import { ImageModalControlGroup, ImageModalTopControlGroup } from "./ImageModalControlGroup";
 import { useModalControlGroup } from "./useModalControlGroup";
 
@@ -118,50 +119,22 @@ export const ImageModal = ({
       }
     >
       <Box sx={{ position: "relative", height: "100%" }}>
-        <Stack
-          ref={scrollRef}
-          sx={
-            zoom === "fit"
-              ? {
-                  height: "100%",
-                  overflow: "hidden",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "common.black"
-                }
-              : { height: "100%", overflow: "auto", alignItems: "flex-start", backgroundColor: "common.black" }
-          }
-        >
-          <Box
-            sx={{
-              position: "relative",
-              lineHeight: 0,
-              m: "auto",
-              ...(zoom === "fit" && fullScreen
-                ? { display: "flex", height: "100%", maxWidth: "100%", alignItems: "center", justifyContent: "center" }
-                : { display: "inline-block", ...(zoom === "fit" && { maxWidth: "100%" }) })
-            }}
-          >
-            <Box
-              component="img"
-              src={src}
-              alt={name}
-              onLoad={() => {
-                const element = scrollRef.current;
-                if (element) {
-                  setScrollbarWidths({
-                    bottom: element.offsetHeight - element.clientHeight,
-                    right: element.offsetWidth - element.clientWidth
-                  });
-                }
-              }}
-              sx={{
-                display: "block",
-                ...(zoom === "fit" && { maxWidth: "100%", maxHeight: fullScreen ? "100%" : "80dvh" })
-              }}
-            />
-          </Box>
-        </Stack>
+        <ImageModalImage
+          src={src}
+          alt={name}
+          fitScreen={zoom === "fit"}
+          fullScreen={fullScreen}
+          scrollRef={scrollRef}
+          onImageLoad={() => {
+            const element = scrollRef.current;
+            if (element) {
+              setScrollbarWidths({
+                bottom: element.offsetHeight - element.clientHeight,
+                right: element.offsetWidth - element.clientWidth
+              });
+            }
+          }}
+        />
         {!mobile && (
           <ImageModalControlGroup
             onZoomInClick={() => setZoom("original")}
