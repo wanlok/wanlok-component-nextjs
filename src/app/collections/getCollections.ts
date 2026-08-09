@@ -42,10 +42,10 @@ const getCollectionsFromDisk = async (directoryPath: string): Promise<Collection
   return result;
 };
 
-let cachedCollections: Collection[] | undefined;
+let cachedCollectionsPromise: Promise<Collection[]> | undefined;
 
 export const invalidateCollectionsCache = () => {
-  cachedCollections = undefined;
+  cachedCollectionsPromise = undefined;
 };
 
 export const getCollections = async (): Promise<Collection[]> => {
@@ -53,8 +53,11 @@ export const getCollections = async (): Promise<Collection[]> => {
   if (!directoryPath) {
     return [];
   }
-  if (!cachedCollections) {
-    cachedCollections = await getCollectionsFromDisk(directoryPath);
+  if (!cachedCollectionsPromise) {
+    cachedCollectionsPromise = getCollectionsFromDisk(directoryPath).catch((error) => {
+      cachedCollectionsPromise = undefined;
+      throw error;
+    });
   }
-  return cachedCollections;
+  return cachedCollectionsPromise;
 };
