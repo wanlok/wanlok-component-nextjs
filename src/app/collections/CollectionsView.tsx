@@ -2,7 +2,7 @@
 
 import { LayoutPanel } from "@/components/LayoutPanel";
 import { Stack, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LeftHeader } from "./LeftHeader";
 import { LeftContent } from "./LeftContent";
@@ -22,6 +22,9 @@ export const CollectionsView = ({
   hideDeleteButton: boolean;
 }) => {
   const router = useRouter();
+  useEffect(() => {
+    console.log("CollectionsView mounted");
+  }, []);
   const [panelOpened, setPanelOpened] = useState(false);
   const [opened, setOpened] = useState(false);
   const [folderControlGroupState, setFolderControlGroupState] = useState(0);
