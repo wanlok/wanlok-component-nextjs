@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import { Box, Stack, useMediaQuery, useTheme } from "@mui/material";
 import { Image as ImageIcon, ViewList as ViewListIcon } from "@mui/icons-material";
 import { WModal } from "@/components/WModal";
@@ -9,19 +9,16 @@ import { ImageMetaContainer } from "@/components/ImageMetaContainer";
 import { ImageModalImage } from "@/components/ImageModalImage";
 import { ImageModalControlGroup, ImageModalTopControlGroup } from "./ImageModalControlGroup";
 import { useModalControlGroup } from "./useModalControlGroup";
+import { ImageMeta } from "@/Types";
 
 const Details = ({
   name,
   onNameChange,
-  width,
-  height,
-  type
+  imageMeta
 }: {
   name: string;
   onNameChange: (name: string) => void;
-  width: number;
-  height: number;
-  type: string;
+  imageMeta: ImageMeta | undefined;
 }) => (
   <Stack sx={{ p: 2, gap: 2 }}>
     <Stack sx={{ gap: "1px" }}>
@@ -29,7 +26,7 @@ const Details = ({
         <TextInput label="Name" value={name} onChange={onNameChange} inputSx={{ flex: 1 }} />
       </StyledContainer>
     </Stack>
-    <ImageMetaContainer imageMeta={{ width, height, type }} />
+    <ImageMetaContainer imageMeta={imageMeta} />
   </Stack>
 );
 
@@ -37,9 +34,6 @@ export const ImageModal = ({
   open,
   src,
   name,
-  width,
-  height,
-  type,
   onPreviousClick,
   onNextClick,
   onSaveButtonClick,
@@ -48,9 +42,6 @@ export const ImageModal = ({
   open: boolean;
   src: string;
   name: string;
-  width: number;
-  height: number;
-  type: string;
   onPreviousClick?: () => void;
   onNextClick?: () => void;
   onSaveButtonClick: (name: string) => void;
@@ -62,6 +53,7 @@ export const ImageModal = ({
   const [editedName, setEditedName] = useState(name);
   const { isFullScreen, onFullScreenClick, exitFullScreen, isRightHidden, onDetailsClick } = useModalControlGroup();
   const [scrollbarWidths, setScrollbarWidths] = useState({ bottom: 0, right: 0 });
+  const [imageMeta, setImageMeta] = useState<ImageMeta | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fullScreen = mobile || isFullScreen;
   const rightHidden = mobile ? false : isRightHidden;
@@ -82,6 +74,36 @@ export const ImageModal = ({
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect();
   }, [zoom]);
+
+  useEffect(() => {
+    if (!open || !src) {
+      return;
+    }
+    let cancelled = false;
+    fetch(src, { headers: { Range: "bytes=0-0" } })
+      .then((response) => response.headers.get("content-type"))
+      .then((type) => {
+        if (!cancelled && type) {
+          setImageMeta((current) => ({ width: current?.width ?? 0, height: current?.height ?? 0, type }));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [open, src]);
+
+  const onImageLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = event.currentTarget;
+    setImageMeta((current) => ({ width: naturalWidth, height: naturalHeight, type: current?.type ?? "" }));
+    const element = scrollRef.current;
+    if (element) {
+      setScrollbarWidths({
+        bottom: element.offsetHeight - element.clientHeight,
+        right: element.offsetWidth - element.clientWidth
+      });
+    }
+  };
 
   const closeModal = () => {
     exitFullScreen();
@@ -121,7 +143,7 @@ export const ImageModal = ({
       }
       rightChildren={
         rightHidden ? undefined : (
-          <Details name={editedName} onNameChange={setEditedName} width={width} height={height} type={type} />
+          <Details name={editedName} onNameChange={setEditedName} imageMeta={imageMeta} />
         )
       }
     >
@@ -132,15 +154,7 @@ export const ImageModal = ({
           fitScreen={zoom === "fit"}
           fullScreen={fullScreen}
           scrollRef={scrollRef}
-          onImageLoad={() => {
-            const element = scrollRef.current;
-            if (element) {
-              setScrollbarWidths({
-                bottom: element.offsetHeight - element.clientHeight,
-                right: element.offsetWidth - element.clientWidth
-              });
-            }
-          }}
+          onImageLoad={onImageLoad}
         />
         {!mobile && (
           <ImageModalControlGroup

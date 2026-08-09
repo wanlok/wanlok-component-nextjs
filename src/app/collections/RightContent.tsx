@@ -65,9 +65,6 @@ export const RightContent = ({
         open={selectedImage !== undefined}
         src={selectedImage ? getFileUrl(selectedImage.name) : ""}
         name={selectedImage?.name ?? ""}
-        width={selectedImage?.width ?? 0}
-        height={selectedImage?.height ?? 0}
-        type={selectedImage?.type ?? ""}
         onPreviousClick={previousFile ? () => setSelectedFile(previousFile) : undefined}
         onNextClick={nextFile ? () => setSelectedFile(nextFile) : undefined}
         onSaveButtonClick={(newName) => {

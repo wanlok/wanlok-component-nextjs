@@ -1,3 +1,8 @@
 import { CollectionFile } from "@/Types";
 
-export const isCollectionVideo = (file: CollectionFile) => file.type.startsWith("video/");
+const videoExtensions = ["mp4", "mov", "webm", "m4v"];
+
+export const isCollectionVideo = (file: CollectionFile) => {
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  return extension !== undefined && videoExtensions.includes(extension);
+};

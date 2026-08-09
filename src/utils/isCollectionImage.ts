@@ -1,3 +1,8 @@
-import { CollectionFile, CollectionImage } from "@/Types";
+import { CollectionFile } from "@/Types";
 
-export const isCollectionImage = (file: CollectionFile): file is CollectionImage => "width" in file;
+const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp"];
+
+export const isCollectionImage = (file: CollectionFile) => {
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  return extension !== undefined && imageExtensions.includes(extension);
+};

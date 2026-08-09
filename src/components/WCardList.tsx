@@ -38,7 +38,7 @@ export const WCardList = <T,>({
     <Stack sx={{ flex: 1, overflowY: "auto" }}>
       <Stack sx={{ flex: 1, backgroundColor: "common.white" }}>
         {items.map((item, index) => {
-          const space = (getDepth?.(item) ?? 0) * 4;
+          const space = (getDepth?.(item) ?? 0) * 2;
           return (
             <Fragment key={`card-list-${index}`}>
               <Stack sx={{ flexDirection: "row", ml: space }}>
@@ -47,7 +47,7 @@ export const WCardList = <T,>({
                 </WCard>
                 {renderRightContent(item)}
               </Stack>
-              {index !== items.length - 1 && <Divider sx={{ ml: 7 + space, mr: 0 }} />}
+              {index !== items.length - 1 && <Divider sx={{ ml: space + 7 }} />}
             </Fragment>
           );
         })}
